@@ -9,9 +9,10 @@ def preprocessing(data, seq_len, note_len, note_set):
     
     note_dict = dict((note, number) for number, note in enumerate(note_set))
  
-    for i in range(0, len(data) - seq_len, 1):
-            notes = data[i:i + seq_len]
-            notes_label = data[i + seq_len]
+    for part in data:
+        for i in range(0, len(part) - seq_len, 1):
+            notes = part[i:i + seq_len]
+            notes_label = part[i + seq_len]
             train_data.append([note_dict[note] for note in notes])
             train_label.append(note_dict[notes_label])
 
@@ -28,14 +29,14 @@ def train(data, label, model_name, note_len):
     if not os.path.isfile("./" + model_name):
         model = models.Sequential()
     
-        model.add(layers.LSTM(32, input_shape=(data.shape[1],
+        model.add(layers.LSTM(256, input_shape=(data.shape[1],
                 data.shape[2]), return_sequences=True))
-        model.add(layers.Dropout(0.3))
-        model.add(layers.LSTM(64, return_sequences=True))
-        model.add(layers.Dropout(0.3))
-        model.add(layers.LSTM(64))
-        model.add(layers.Dense(32))
-        model.add(layers.Dropout(0.3))
+        model.add(layers.Dropout(0.2))
+        model.add(layers.LSTM(512, return_sequences=True))
+        model.add(layers.Dropout(0.2))
+        model.add(layers.LSTM(512))
+        model.add(layers.Dense(256))
+        model.add(layers.Dropout(0.2))
         model.add(layers.Dense(note_len))
         model.add(layers.Activation('softmax'))
 
@@ -45,7 +46,7 @@ def train(data, label, model_name, note_len):
     else:
         model = models.load_model("./" + model_name)
 
-    model.fit(data, label, epochs=100, batch_size=64,shuffle=True)
+    model.fit(data, label, epochs=25, batch_size=64,shuffle=True)
 
     model.save(model_name)
 

@@ -1,19 +1,19 @@
 import numpy as np
 from keras import models
 
-def predict(message, note_len, note_set):
+def predict(key, note_len, note_set, model):
 
     generated_output = []
+    numbers = [] 
 
-    model = models.load_model("model.hd5")
+    model = models.load_model(model)
     number_keys = dict((note, number) for number, note in enumerate(note_set))
     note_keys = dict((number, note) for number, note in enumerate(note_set))
     
-    numbers = [] 
-    for note in message:
+    for note in key:
         numbers.append(number_keys[note])
 
-    for note in range(4*95):
+    for note in range(32):
 
         data = np.reshape(numbers, (1, len(numbers), 1))
         data = data / float(note_len)
