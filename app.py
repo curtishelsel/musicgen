@@ -1,5 +1,5 @@
 import os
-import random
+import sys
 import time
 import encode
 import pickle
@@ -12,6 +12,7 @@ def get_data(path):
 
     data = []
     duration = []
+    path = path + "/"
 
     if not os.path.isfile(path + "data_set"):
         for midi in os.listdir(path):
@@ -36,36 +37,71 @@ def get_data(path):
     
     return data, duration
 
-path = "./train_data/america/"
-seq_len = 8 
+def dosome():
 
-data, duration = get_data(path)
 
-note_set = sorted(set([note for part in data for note in part]))
-note_len = len(note_set) 
+    a, dur = midi_to_notes("./test.mid")
+    reopen = []
+    for x, y in zip(a[0], dur):
+        reopen.append(x + str(y))
 
-model_name = path + "model.hd5" 
-#train_data, train_label = preprocessing(data, seq_len, note_len, note_set)
-#train(train_data, train_label, model_name, note_len)
 
-key = []
-for index in range(seq_len):
-    key.append(random.choice(note_set))
+    l = [reopen[i * n:(i + 1)*n] for i in range((len(reopen) + n-1) // n)]
 
-notes = predict(key, note_len, note_set, model_name)
-print(notes)
 
-midi_notes = notes_to_midi(notes, duration)
-midi = music21.stream.Stream(midi_notes)
-midi.write("midi", fp="test.mid")
-"""
-reopen, dur = midi_to_notes("./test.mid")
+    print(len(b))
 
-n = 8
-l = [reopen[i * n:(i + 1)*n] for i in range((len(reopen) + n-1) // n)]
+def get_set(data):
 
-b_set = set(tuple(x) for x in l)
-b = [list(x) for x in b_set]
+    element_set = sorted(set([e for d in data for e in d]))
+    
+    return element_set, len(element_set)
 
-print(len(b))
-"""
+
+if __name__ == "__main__":
+
+#    try:
+        seq_len = 100 
+        path = sys.argv[2]
+        data, duration = get_data(path)
+        note_model = path + str(seq_len) + "epoch_note_model.hd5" 
+        duration_model = path + str(seq_len) + "epoch_duration_model.hd5" 
+        
+        note_set, note_len = get_set(data)
+        dur_set, dur_len = get_set(duration)
+
+        if sys.argv[1].lower() == "train":
+            print("Training on Notes")
+            train_data, train_label = preprocessing(data, seq_len, note_len, note_set)
+            train(train_data, train_label, note_model, note_len, int(sys.argv[3]))
+            print("Traning on Durations")
+            train_dur, train_dur_label = preprocessing(duration, seq_len, dur_len, dur_set)
+            train(train_dur, train_dur_label, duration_model, dur_len, 25)
+
+        elif sys.argv[1].lower() == "encode":
+            
+            notes, key = predict(seq_len, note_len, note_set, model_name,
+                    duration)
+            
+            n = 4
+            print(notes)
+    
+            l = [notes[i * n:(i + 1)*n] for i in range((len(notes) + n-1) // n)]
+            b_set = set(tuple(x) for x in l)
+            b = [list(x) for x in b_set]
+            print(b)
+            
+            print(key)
+            print(len(b))
+            #message = encode(notes)
+            
+#            midi_notes = notes_to_midi(message, duration)
+#            midi = music21.stream.Stream(midi_notes)
+#            midi.write("midi", fp="test.mid")
+
+        elif sys.argv[1].lower() == "decode":
+            decode = True
+#    except:
+        print("USAGE: train or encode or decode")
+        print("Example: app.py train /path/to/dataset/")
+    

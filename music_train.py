@@ -24,18 +24,17 @@ def preprocessing(data, seq_len, note_len, note_set):
     return train_data, train_label
 
 
-def train(data, label, model_name, note_len):
+def train(data, label, model_name, note_len, epochs):
 
     if not os.path.isfile("./" + model_name):
         model = models.Sequential()
-    
-        model.add(layers.LSTM(256, input_shape=(data.shape[1],
+
+        model.add(layers.LSTM(64, input_shape=(data.shape[1],
                 data.shape[2]), return_sequences=True))
         model.add(layers.Dropout(0.2))
-        model.add(layers.LSTM(512, return_sequences=True))
+        model.add(layers.LSTM(128))
         model.add(layers.Dropout(0.2))
-        model.add(layers.LSTM(512))
-        model.add(layers.Dense(256))
+        model.add(layers.Dense(64))
         model.add(layers.Dropout(0.2))
         model.add(layers.Dense(note_len))
         model.add(layers.Activation('softmax'))
@@ -46,7 +45,8 @@ def train(data, label, model_name, note_len):
     else:
         model = models.load_model("./" + model_name)
 
-    model.fit(data, label, epochs=25, batch_size=64,shuffle=True)
+    model.fit(data, label, epochs=epochs, batch_size=64,shuffle=True,
+            validation_split=0.2)
 
     model.save(model_name)
 
