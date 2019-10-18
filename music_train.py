@@ -29,13 +29,13 @@ def train(data, label, model_name, note_len, epochs):
     if not os.path.isfile("./" + model_name):
         model = models.Sequential()
 
-        model.add(layers.LSTM(64, input_shape=(data.shape[1],
-                data.shape[2]), return_sequences=True))
-        model.add(layers.Dropout(0.2))
-        model.add(layers.LSTM(128))
-        model.add(layers.Dropout(0.2))
-        model.add(layers.Dense(64))
-        model.add(layers.Dropout(0.2))
+        model.add(layers.LSTM(32, input_shape=(data.shape[1],
+                data.shape[2])))
+#        model.add(layers.Dropout(0.2))
+#        model.add(layers.LSTM(128))
+#        model.add(layers.Dropout(0.2))
+#        model.add(layers.Dense(64))
+#        model.add(layers.Dropout(0.2))
         model.add(layers.Dense(note_len))
         model.add(layers.Activation('softmax'))
 

@@ -60,8 +60,8 @@ def get_set(data):
 
 if __name__ == "__main__":
 
-#    try:
-        seq_len = 100 
+    if len(sys.argv) > 1:
+        seq_len = 32 
         path = sys.argv[2]
         data, duration = get_data(path)
         note_model = path + str(seq_len) + "epoch_note_model.hd5" 
@@ -74,14 +74,13 @@ if __name__ == "__main__":
             print("Training on Notes")
             train_data, train_label = preprocessing(data, seq_len, note_len, note_set)
             train(train_data, train_label, note_model, note_len, int(sys.argv[3]))
-            print("Traning on Durations")
-            train_dur, train_dur_label = preprocessing(duration, seq_len, dur_len, dur_set)
-            train(train_dur, train_dur_label, duration_model, dur_len, 25)
+#            print("Traning on Durations")
+#            train_dur, train_dur_label = preprocessing(duration, seq_len, dur_len, dur_set)
+#            train(train_dur, train_dur_label, duration_model, dur_len, 25)
 
         elif sys.argv[1].lower() == "encode":
             
-            notes, key = predict(seq_len, note_len, note_set, model_name,
-                    duration)
+            notes, key = predict(seq_len, note_len, note_set, note_model, duration)
             
             n = 4
             print(notes)
@@ -101,7 +100,7 @@ if __name__ == "__main__":
 
         elif sys.argv[1].lower() == "decode":
             decode = True
-#    except:
+    else:
         print("USAGE: train or encode or decode")
         print("Example: app.py train /path/to/dataset/")
     

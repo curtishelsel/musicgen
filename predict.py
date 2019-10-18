@@ -24,8 +24,8 @@ def predict(seq_len, note_len, note_set, model, duration):
     alphabet = [x for x in string.printable[:95]]
     notes_per_char = 4
 
-    duration = list(filter(lambda a: a != 0.0, duration))
-    duration = [x for x in duration if x < 10.0]
+#    duration = list(filter(lambda a: a != 0.0, duration))
+#    duration = [x for x in duration if x < 10.0]
 
     for note in range(notes_per_char * len(alphabet)):
 
@@ -36,7 +36,7 @@ def predict(seq_len, note_len, note_set, model, duration):
         index = np.argmax(prediction)
         result = note_keys[index]
         dur = random.choice(duration)
-        generated_output.append(result + "@" + str(dur))
+        generated_output.append(result)
 
         
         numbers.append(index)
