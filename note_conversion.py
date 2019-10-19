@@ -43,21 +43,22 @@ def midi_to_notes(midi):
  
 def get_element(element):
  
+    duration = element.quarterLength
+    if duration == 0.0:
+        duration = 0.25
+    elif duration > 5.0:
+        duration = 5.0
+
     if isinstance(element, music21.note.Note):
         note = str(element.pitch)
-        duration = element.quarterLength
-        if duration == 0.0:
-            duration = 0.25
-        if duration > 10.0:
-            duration = 10.0
         return note, duration 
+    elif isinstance(element, music21.note.Rest):
+        rest = str(element.name)
+        return rest, duration 
     elif isinstance(element, music21.chord.Chord):
-        chord = '&'.join(str(n.pitch) for n in element)
-        duration = element.quarterLength
-        if duration == 0.0:
-            duration = 0.25
-        if duration > 10.0:
-            duration = 10.0
+        chord = '&'.join(str(n) for n in element.normalOrder)
+        if len(chord) == 1:
+            chord = '&'.join(str(n.pitch) for n in element)
         return chord, duration 
 
     return None, None

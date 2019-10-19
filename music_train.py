@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from keras import utils, models, layers
+from keras_self_attention import SeqSelfAttention
 
 def preprocessing(data, seq_len, note_len, note_set):
 
@@ -29,13 +30,10 @@ def train(data, label, model_name, note_len, epochs):
     if not os.path.isfile("./" + model_name):
         model = models.Sequential()
 
-        model.add(layers.LSTM(32, input_shape=(data.shape[1],
-                data.shape[2])))
-#        model.add(layers.Dropout(0.2))
-#        model.add(layers.LSTM(128))
-#        model.add(layers.Dropout(0.2))
-#        model.add(layers.Dense(64))
-#        model.add(layers.Dropout(0.2))
+        model.add(layers.Bidirectional(layers.LSTM(256,
+                        input_shape=(data.shape[1],
+                            data.shape[2]))))
+        model.add(layers.Dropout(0.2))
         model.add(layers.Dense(note_len))
         model.add(layers.Activation('softmax'))
 
@@ -45,8 +43,7 @@ def train(data, label, model_name, note_len, epochs):
     else:
         model = models.load_model("./" + model_name)
 
-    model.fit(data, label, epochs=epochs, batch_size=64,shuffle=True,
-            validation_split=0.2)
+    model.fit(data, label, epochs=epochs, batch_size=64,shuffle=True)
 
     model.save(model_name)
 

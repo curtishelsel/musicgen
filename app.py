@@ -61,14 +61,15 @@ def get_set(data):
 if __name__ == "__main__":
 
     if len(sys.argv) > 1:
-        seq_len = 32 
+        seq_len = 8 
         path = sys.argv[2]
         data, duration = get_data(path)
-        note_model = path + str(seq_len) + "epoch_note_model.hd5" 
-        duration_model = path + str(seq_len) + "epoch_duration_model.hd5" 
+        note_model = path + str(seq_len) + "seq_note_model.hd5" 
+        duration_model = path + str(seq_len) + "seq_duration_model.hd5" 
         
         note_set, note_len = get_set(data)
         dur_set, dur_len = get_set(duration)
+        print(note_len)
 
         if sys.argv[1].lower() == "train":
             print("Training on Notes")
